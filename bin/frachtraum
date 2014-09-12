@@ -1,0 +1,55 @@
+#!/usr/bin/env ruby
+# -*- encoding : utf-8 -*-
+
+require 'frachtraum'
+require "thor"
+
+class FrachtraumCLI < Thor
+  
+  desc "attach [DEPOT]", "decrypt and mount depot(s)"
+  long_desc <<-LONGDESC
+    `frachtraum attach` will prompt you for a password.
+    
+    The password is used to decrypt all depots specified
+    in #{Frachtraum::CONFIG_FILE}
+
+    You can optionally specify a single depot. In this case
+    only this depot will be decrypted and mounted.
+  LONGDESC
+  def attach(depot=nil)
+    # TODO
+  end
+  
+  desc "capacity", "calculate storage capacity"
+  long_desc <<-LONGDESC
+    `frachtraum capacity` will output capacity...
+
+    lorem ipsum
+  LONGDESC
+  def capacity()
+    # TODO
+  end
+  
+  desc "setupdisk", "setup a device as a new depot"
+  long_desc <<-LONGDESC
+    `frachtraum setup dev label` will setup...
+    
+    lorem ispum
+  LONGDESC
+  options :mountpoint => :string, :keylength => :integer, :encryption => :string, :compression => :string
+  def setupdisk(dev,label)
+    # TODO
+  end
+  
+  desc "test", "test system form compatibility"
+  long_desc <<-LONGDESC
+    `frachtraum test` will test...
+
+    lorem ipsum
+  LONGDESC
+  def test()
+    Frachtraum.run_system_test
+  end
+end
+ 
+FrachtraumCLI.start(ARGV)
