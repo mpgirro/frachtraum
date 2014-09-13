@@ -53,54 +53,42 @@ module Frachtraum
      ask(prompt) {|q| q.echo = false}
   end
   
-  def attach_bsd(password,depot)
+  def attach_bsd(depot=nil)
+    
+    # if we procided a specific depot, run procedure only on that one
+    depots = depot.nil? ? Frachtraum::DEPOTS : [depot]
     
     password = get_password
     
     # first of all, decrypt and mount all depots
-    Frachtraum::DEPOTS.each do |depot| 
+    depots.each do |depot| 
       
-      print "decrypting zfs on /dev/label/#{depot}"
+      print "decrypting zfs on /dev/label/#{depot}..."
       
       attach_cmd = "echo #{password} | geli attach -d -j - /dev/label/#{depot} 2>&1"
-      mount_cmd = "zfs mount #{label} 2>&1"
+      mount_cmd = "zfs mount #{depot} 2>&1"
       
-      Open3.popen3(attach_cmd) do |stdin, stdout, stderr, wait_thr|  
-        err_msg = [] 
-        err_msg << line while line = stderr.gets
-
-        exit_status = wait_thr.value
-        if exit_status.success?
-          puts "done"
-
-          Open3.popen3(mount_cmd) do |stdin, stdout, stderr, wait_thr|        
-            err_msg = [] 
-            err_msg << line while line = stderr.gets
+      output = %x( #{attach_cmd} )
+      if $?.success? 
         
-            exit_status = wait_thr.value
-            if exit_status.success? then puts "done"
-            else abort "FAILED! -- Reason: #{err_msg}" end
-
-          end
-          
-        else
-          abort "FAILED! -- Reason: #{err_msg}"
-        end
+        output = %x( #{mount_cmd} )
+        if $?.success? then puts "done"
+        else puts "FAILED! -- Reason: #{output}" end
+        
+      else 
+        puts "FAILED! -- Reason: #{output}" 
       end
     end # Frachtraum::DEPOTS.each
     
     # mount timemachine targets as well
     TIMEMACHINE_TARGETS.each do |tmtarget|
-      print "mounting timemachine target #{tmtarget}"
-      mount_cmd = "zfs mount #{tmtarget}) 2>&1"
-      Open3.popen3(mount_cmd) do |stdin, stdout, stderr, wait_thr|        
-        err_msg = [] 
-        err_msg << line while line = stderr.gets
-    
-        exit_status = wait_thr.value
-        if exit_status.success? then puts "done"
-        else abort "FAILED! -- Reason: #{err_msg}" end
-      end
+      print "mounting timemachine target #{tmtarget}..."
+      mount_cmd = "zfs mount #{tmtarget} 2>&1"
+      
+      output = %x( #{mount_cmd} )
+      if $?.success? then puts "done"
+      else puts "FAILED! -- Reason: #{output}" end
+
     end
     
     # restart samba so it reports the correct pool size
@@ -110,7 +98,7 @@ module Frachtraum
     else puts "FAILED! -- Reason: #{output}" end
   end
   
-  def attach_linux(password,depot)
+  def attach_linux(depot)
     # TODO
     abort "not yet implemented"
   end
