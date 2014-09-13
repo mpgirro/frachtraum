@@ -30,15 +30,33 @@ class FrachtraumCLI < Thor
     # TODO
   end
   
+  desc "diskreport", "lorem ipsum"
+  long_desc <<-LONGDESC
+    lorem ipsum
+  LONGDESC
+  def diskreport()
+    # TODO
+  end
+  
   desc "setupdisk", "setup a device as a new depot"
   long_desc <<-LONGDESC
     `frachtraum setup dev label` will setup...
     
     lorem ispum
   LONGDESC
-  options :mountpoint => :string, :keylength => :integer, :encryption => :string, :compression => :string
+  options :compression => :string, :encryption => :string, :keylength => :integer, :mountpoint => :string
   def setupdisk(dev,label)
-    # TODO
+    
+    compression = options[:compression] ? options[:compression] : Frachtraum::DEFAULT_COMPRESSION
+    encryption  = options[:encryption]  ? options[:encryption]  : Frachtraum::DEFAULT_ENCRYPTION
+    keylength   = options[:keylength]   ? options[:keylength]   : Frachtraum::DEFAULT_KEYLENGTH
+    mountpoint  = options[:mountpoint]  ? options[:mountpoint]  : Frachtraum::DEFAULT_MOUNTPOINT
+    
+    case RUBY_PLATFORM
+      when /bsd/   then setupdisk_bsd(dev, label, compression, encryption, keylength, mountpoint)
+      when /linux/ then setupdisk_linux(dev, label, compression, encryption, keylength, mountpoint)
+    end
+    
   end
   
   desc "test", "test system form compatibility"
