@@ -1,0 +1,6 @@
+# Example Config
+compression = lz4
+depots 		= depot1,depot2,depot3
+encryption 	= AES-XTS
+keylength 	= 4096
+mountpoint 	= /frachtraum

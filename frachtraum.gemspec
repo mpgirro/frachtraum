@@ -19,5 +19,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
    
   spec.required_ruby_version = '>= 1.9.3'  
+  
+  spec.add_dependency 'highline', '~> 1.6.21'
+  spec.add_dependency 'parseconfig', '~> 1.0.4'
 
 end

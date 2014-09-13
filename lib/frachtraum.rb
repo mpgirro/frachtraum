@@ -4,17 +4,27 @@
 
 require 'mkmf' # part of stdlib
 require 'open3'
+require 'highline/import'
+require 'parseconfig'
 
 module Frachtraum
   
   VERSION = '0.0.1'
   
-  CONFIG_FILE = '~/.frachtraumrc'
+  CONFIG_FILE = '../frachtraum.conf.example'
   
-  DEFAULT_COMPRESSION = 'lz4'
-  DEFAULT_ENCRYPTION  = 'AES-XTS'
-  DEFAULT_KEYLENGTH   = 4096
-  DEFAULT_MOUNTPOINT  = '/frachtraum'
+  if File.exists?(CONFIG_FILE)
+    config = ParseConfig.new(CONFIG_FILE)
+    DEFAULT_COMPRESSION = config['compression']
+    DEFAULT_ENCRYPTION  = config['encryption']
+    DEFAULT_KEYLENGTH   = config['keylength']
+    DEFAULT_MOUNTPOINT  = config['mountpoint']
+  else
+    DEFAULT_COMPRESSION = 'lz4'
+    DEFAULT_ENCRYPTION  = 'AES-XTS'
+    DEFAULT_KEYLENGTH   = 4096
+    DEFAULT_MOUNTPOINT  = '/frachtraum'
+  end
   
   REQUIRED_TOOLS_BSD   = ['dd','gpart','glabel','geli','zfs','zpool']
   REQUIRED_TOOLS_LINUX = [] # not yet supported
@@ -29,17 +39,35 @@ module Frachtraum
     end
   end # exec_cmd
   
-  
+
   
   module_function # all following methods will be callable from outside the module
+  
+  def get_password(prompt="Enter Password")
+     ask(prompt) {|q| q.echo = false}
+  end
+  
+  def attach_bsd(password,depot)
+    
+  end
+  
+  def attach_linux(password,depot)
+    # TODO
+    abort "not yet implemented"
+  end
   
   def setupdisk_bsd(dev, label, compression, encryption, keylength, mountpoint)
     
     # TODO password promt, confirmation question, etc..
     abort "implementation not ready yet"
     
-    # TODO promt for password
-    password = "hugo"
+    password1 = get_password("enter the encryption password: ")
+    password2 = get_password("enter password again: ")
+    if password1.match(password2)
+      password = password1
+    else
+      abort "passwords not equal!"
+    end
 
     print "destroying previous partitioning on /dev/#{dev}..."
     exec_cmd "dd if=/dev/zero of=/dev/#{dev} bs=512 count=1"
