@@ -17,8 +17,16 @@ class FrachtraumCLI < Thor
     only this depot will be decrypted and mounted.
   LONGDESC
   def attach(depot=nil)
-    # TODO
+    
+    password = get_password
+    
+    case RUBY_PLATFORM
+      when /bsd/   then attach_bsd(password,depot)
+      when /linux/ then attach_linux(password,depot)
+    end
   end
+  
+  # --------------
   
   desc "capacity", "calculate storage capacity"
   long_desc <<-LONGDESC
@@ -30,6 +38,8 @@ class FrachtraumCLI < Thor
     # TODO
   end
   
+  # --------------
+  
   desc "diskreport", "lorem ipsum"
   long_desc <<-LONGDESC
     lorem ipsum
@@ -37,6 +47,20 @@ class FrachtraumCLI < Thor
   def diskreport()
     # TODO
   end
+  
+  # --------------
+  
+  desc "list", "list depots"
+  long_desc <<-LONGDESC
+    lorem ipsum
+  LONGDESC
+  def listdepots()
+    
+    Frachtraum::DEPOTS.each{ |depot| puts depot }
+    
+  end
+  
+  # --------------
   
   desc "setupdisk", "setup a device as a new depot"
   long_desc <<-LONGDESC
@@ -59,7 +83,9 @@ class FrachtraumCLI < Thor
     
   end
   
-  desc "test", "test system form compatibility"
+  # --------------
+  
+  desc "test", "test system for compatibility"
   long_desc <<-LONGDESC
     `frachtraum test` will test...
 

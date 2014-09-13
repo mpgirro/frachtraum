@@ -11,7 +11,7 @@ module Frachtraum
   
   VERSION = '0.0.1'
   
-  CONFIG_FILE = '../frachtraum.conf.example'
+  CONFIG_FILE = 'frachtraum.conf.example'
   
   if File.exists?(CONFIG_FILE)
     config = ParseConfig.new(CONFIG_FILE)
@@ -19,11 +19,15 @@ module Frachtraum
     DEFAULT_ENCRYPTION  = config['encryption']
     DEFAULT_KEYLENGTH   = config['keylength']
     DEFAULT_MOUNTPOINT  = config['mountpoint']
+    
+    DEPOTS = config['depots'].split(',')
   else
     DEFAULT_COMPRESSION = 'lz4'
     DEFAULT_ENCRYPTION  = 'AES-XTS'
     DEFAULT_KEYLENGTH   = 4096
     DEFAULT_MOUNTPOINT  = '/frachtraum'
+    
+    DEPOTS = ['non set']
   end
   
   REQUIRED_TOOLS_BSD   = ['dd','gpart','glabel','geli','zfs','zpool']
@@ -115,7 +119,7 @@ module Frachtraum
     case RUBY_PLATFORM
       when /bsd/ then tool_list = REQUIRED_TOOLS_BSD
       when /linux/ then tool_list = REQUIRED_TOOLS_LINUX
-      else raise InvalidOSError
+      else abort "OS not supported"
     end
     
     tool_list.each do |tool|
