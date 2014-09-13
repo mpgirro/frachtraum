@@ -4,3 +4,4 @@ depots 		= depot1,depot2,depot3
 encryption 	= AES-XTS
 keylength 	= 4096
 mountpoint 	= /frachtraum
+tmtargets	= depot1/TimeMachine/user1
