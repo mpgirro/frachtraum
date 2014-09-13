@@ -21,13 +21,15 @@ module Frachtraum
     DEFAULT_MOUNTPOINT  = config['mountpoint']
     
     DEPOTS = config['depots'].split(',')
+    TIMEMACHINE_TARGETS = config['tmtargets'].split(',')
   else
     DEFAULT_COMPRESSION = 'lz4'
     DEFAULT_ENCRYPTION  = 'AES-XTS'
     DEFAULT_KEYLENGTH   = 4096
     DEFAULT_MOUNTPOINT  = '/frachtraum'
     
-    DEPOTS = ['non set']
+    DEPOTS = []
+    TIMEMACHINE_TARGETS = []
   end
   
   REQUIRED_TOOLS_BSD   = ['dd','gpart','glabel','geli','zfs','zpool']
@@ -53,6 +55,59 @@ module Frachtraum
   
   def attach_bsd(password,depot)
     
+    password = get_password
+    
+    # first of all, decrypt and mount all depots
+    Frachtraum::DEPOTS.each do |depot| 
+      
+      print "decrypting zfs on /dev/label/#{depot}"
+      
+      attach_cmd = "echo #{password} | geli attach -d -j - /dev/label/#{depot} 2>&1"
+      mount_cmd = "zfs mount #{label} 2>&1"
+      
+      Open3.popen3(attach_cmd) do |stdin, stdout, stderr, wait_thr|  
+        err_msg = [] 
+        err_msg << line while line = stderr.gets
+
+        exit_status = wait_thr.value
+        if exit_status.success?
+          puts "done"
+
+          Open3.popen3(mount_cmd) do |stdin, stdout, stderr, wait_thr|        
+            err_msg = [] 
+            err_msg << line while line = stderr.gets
+        
+            exit_status = wait_thr.value
+            if exit_status.success? then puts "done"
+            else abort "FAILED! -- Reason: #{err_msg}" end
+
+          end
+          
+        else
+          abort "FAILED! -- Reason: #{err_msg}"
+        end
+      end
+    end # Frachtraum::DEPOTS.each
+    
+    # mount timemachine targets as well
+    TIMEMACHINE_TARGETS.each do |tmtarget|
+      print "mounting timemachine target #{tmtarget}"
+      mount_cmd = "zfs mount #{tmtarget}) 2>&1"
+      Open3.popen3(mount_cmd) do |stdin, stdout, stderr, wait_thr|        
+        err_msg = [] 
+        err_msg << line while line = stderr.gets
+    
+        exit_status = wait_thr.value
+        if exit_status.success? then puts "done"
+        else abort "FAILED! -- Reason: #{err_msg}" end
+      end
+    end
+    
+    # restart samba so it reports the correct pool size
+    print "restarting samba server..."
+    output = %x( /usr/local/etc/rc.d/samba restart 2>&1 )
+    if $?.success? then puts "done"
+    else puts "FAILED! -- Reason: #{output}" end
   end
   
   def attach_linux(password,depot)
