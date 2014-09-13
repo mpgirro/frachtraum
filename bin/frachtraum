@@ -52,10 +52,21 @@ class FrachtraumCLI < Thor
   long_desc <<-LONGDESC
     lorem ipsum
   LONGDESC
-  def listdepots()
+  def list(option=nil)
     
-    Frachtraum::DEPOTS.each{ |depot| puts depot }
+    if option == "depot" || option == "depots" || option.nil?
+      puts "" # empty line
+      puts "Depots:"
+      Frachtraum::DEPOTS.each{ |depot| puts "    #{depot}" }
+      puts "" # empty line
+    end
     
+    if option == "timemachine" || option == "tm" || option.nil?
+      puts "" unless option.nil?# empty line
+      puts "Timemachine targets:"
+      Frachtraum::TIMEMACHINE_TARGETS.each{ |tm| puts "    #{tm}" }
+      puts "" # empty line
+    end 
   end
   
   # --------------

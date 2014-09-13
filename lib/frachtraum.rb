@@ -38,16 +38,18 @@ module Frachtraum
   
   def exec_cmd(cmd)
     Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
+      puts line while line = stdout_err.gets
+      
       exit_status = wait_thr.value
       unless exit_status.success?
-        abort "FAILED! -- Reason: #{stdout_err}"
+        abort "FAILED! --> #{stdout_err}"
       end
     end
   end # exec_cmd
   
-
   
   module_function # all following methods will be callable from outside the module
+  
   
   def get_password(prompt="Enter Password")
      ask(prompt) {|q| q.echo = false}
@@ -55,47 +57,39 @@ module Frachtraum
   
   def attach_bsd(depot=nil)
     
-    # if we procided a specific depot, run procedure only on that one
-    depots = depot.nil? ? Frachtraum::DEPOTS : [depot]
+    # if we provided a specific depot, run procedure only on that one
+    depots = depot.nil? ? Frachtraum::DEPOTS : [ depot ]
     
     password = get_password
     
     # first of all, decrypt and mount all depots
-    depots.each do |depot| 
+    depots.each do |depot|      
+      print "decrypting /dev/label/#{depot}..."
       
-      print "decrypting zfs on /dev/label/#{depot}..."
-      
-      attach_cmd = "echo #{password} | geli attach -d -j - /dev/label/#{depot} 2>&1"
-      mount_cmd = "zfs mount #{depot} 2>&1"
-      
-      output = %x( #{attach_cmd} )
+      output = %x( echo #{password} | geli attach -d -j - /dev/label/#{depot} 2>&1 )
       if $?.success? 
-        
-        output = %x( #{mount_cmd} )
-        if $?.success? then puts "done"
-        else puts "FAILED! -- Reason: #{output}" end
-        
+        output = %x( zfs mount #{depot} 2>&1 )
+        if $?.success? then puts "DONE"
+        else puts "FAILED! --> #{output}" end
       else 
-        puts "FAILED! -- Reason: #{output}" 
+        puts "FAILED! --> #{output}" 
       end
     end # Frachtraum::DEPOTS.each
     
     # mount timemachine targets as well
     TIMEMACHINE_TARGETS.each do |tmtarget|
       print "mounting timemachine target #{tmtarget}..."
-      mount_cmd = "zfs mount #{tmtarget} 2>&1"
-      
-      output = %x( #{mount_cmd} )
-      if $?.success? then puts "done"
-      else puts "FAILED! -- Reason: #{output}" end
 
+      output = %x( zfs mount #{tmtarget} 2>&1 )
+      if $?.success? then puts "DONE"
+      else puts "FAILED! --> #{output}" end
     end
     
     # restart samba so it reports the correct pool size
     print "restarting samba server..."
     output = %x( /usr/local/etc/rc.d/samba restart 2>&1 )
-    if $?.success? then puts "done"
-    else puts "FAILED! -- Reason: #{output}" end
+    if $?.success? then puts "DONE"
+    else puts "FAILED! --> #{output}" end
   end
   
   def attach_linux(depot)
@@ -160,7 +154,7 @@ module Frachtraum
   def run_system_test()
     tool_list = []  
     case RUBY_PLATFORM
-      when /bsd/ then tool_list = REQUIRED_TOOLS_BSD
+      when /bsd/   then tool_list = REQUIRED_TOOLS_BSD
       when /linux/ then tool_list = REQUIRED_TOOLS_LINUX
       else abort "OS not supported"
     end
@@ -168,6 +162,9 @@ module Frachtraum
     tool_list.each do |tool|
       find_executable tool
     end
+    
+    # find_executable seems to create such file in case executable is not found
+    File.delete 'mkmf.log' rescue nil 
   end # run_system_test
   
 end # Frachtraum
