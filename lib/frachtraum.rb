@@ -138,8 +138,8 @@ module Frachtraum
       used  = %x( zfs get -o value -Hp used #{MOUNTPOINT}/#{depot} )
       avail = %x( zfs get -o value -Hp available #{MOUNTPOINT}/#{depot} )
       
-      total_used  += (used =="" ? 0 : used)  / 1000 # 1024
-      total_avail += (avail=="" ? 0 : avail) / 1000 # 1024
+      total_used  += (used =="" ? 0 : used).to_i  # / 1000 # 1024
+      total_avail += (avail=="" ? 0 : avail).to_i # / 1000 # 1024
     end
     
     total = total_used + total_avail
