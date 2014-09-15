@@ -64,6 +64,8 @@ module Frachtraum
     end
   end # exec_cmd
   
+
+  
   
   module_function # all following methods will be callable from outside the module
   
@@ -210,6 +212,16 @@ module Frachtraum
     # find_executable seems to create such file in case executable is not found
     File.delete 'mkmf.log' if File.exists?('mkmf.log')
   end # run_system_test
+  
+  
+  def zfs_dataset_exists?(dataset)
+    output = %x( zfs get -H mounted #{dataset} 2>&1 )
+    case output
+    when /yes/ then return true
+    when /dataset does not exist/ then return false
+    else abort "cant'handle output of zfs_dataset_exists?: #{output}"
+    end
+  end
   
 end # Frachtraum
 

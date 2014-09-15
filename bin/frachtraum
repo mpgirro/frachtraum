@@ -72,7 +72,9 @@ class FrachtraumCLI < Thor
         puts "" # empty line
         puts "Depots:"
         puts "" # empty line
-        Frachtraum::DEPOTS.each{ |depot| puts "    #{depot}" }
+        Frachtraum::DEPOTS.each{ |depot| 
+          puts "    #{depot}\t\t[#{Frachtraum.zfs_dataset_exists?(depot) ? "attached" : "UNAVAILABLE"}]" 
+        }
         puts "" # empty line
       end
     end
@@ -84,7 +86,9 @@ class FrachtraumCLI < Thor
         puts "" unless subset.nil? # empty line
         puts "Timemachine targets:"
         puts "" # empty line
-        Frachtraum::TIMEMACHINE_TARGETS.each{ |tm| puts "    #{tm}" }
+        Frachtraum::TIMEMACHINE_TARGETS.each{ |tm| 
+          puts "    #{tm}\t\t[#{Frachtraum.zfs_dataset_exists?(tm) ? "attached" : "UNAVAILABLE"}]" 
+        }
         puts "" # empty line
       end
     end 
