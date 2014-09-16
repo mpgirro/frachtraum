@@ -64,32 +64,6 @@ module Frachtraum
     end
   end # exec_cmd
   
-
-  
-  
-  module_function # all following methods will be callable from outside the module
-  
-  def pretty_SI_bytes(bytes)
-    return "%.1f TB" % (bytes.to_f / BYTES_IN_TB) if bytes > BYTES_IN_TB
-    return "%.1f GB" % (bytes.to_f / BYTES_IN_GB) if bytes > BYTES_IN_GB
-    return "%.1f MB" % (bytes.to_f / BYTES_IN_MB) if bytes > BYTES_IN_MB
-    return "%.1f KB" % (bytes.to_f / BYTES_IN_KB) if bytes > BYTES_IN_KB
-    return "#{bytes} B"
-  end
-  
-  def pretty_IEC_bytes(bytes)
-    return "%.1f TiB" % (bytes.to_f / BYTES_IN_TiB) if bytes > BYTES_IN_TiB
-    return "%.1f GiB" % (bytes.to_f / BYTES_IN_GiB) if bytes > BYTES_IN_GiB
-    return "%.1f MiB" % (bytes.to_f / BYTES_IN_MiB) if bytes > BYTES_IN_MiB
-    return "%.1f KiB" % (bytes.to_f / BYTES_IN_KiB) if bytes > BYTES_IN_KiB
-    return "#{bytes} B"
-  end
-  
-  
-  def get_password(prompt="Enter Password")
-     ask(prompt) {|q| q.echo = false}
-  end
-  
   def attach_bsd(password, depot=nil)
     
     # if we provided a specific depot, run procedure only on that one
@@ -128,23 +102,6 @@ module Frachtraum
   def attach_linux(password, depot)
     # TODO
     abort "not yet implemented"
-  end
-  
-  
-  def capacity()
-    total_used  = 0
-    total_avail = 0
-    DEPOTS.each do |depot|
-      used  = %x( zfs get -o value -Hp used #{MOUNTPOINT}/#{depot} )
-      avail = %x( zfs get -o value -Hp available #{MOUNTPOINT}/#{depot} )
-      
-      total_used  += (used =="" ? 0 : used).to_i  # / 1000 # 1024
-      total_avail += (avail=="" ? 0 : avail).to_i # / 1000 # 1024
-    end
-    
-    total = total_used + total_avail
-    
-    return {:total => total, :avail => total_avail, :used => total_used}
   end
   
   def setupdisk_bsd(dev, label, password, compression, encryption, keylength, mountpoint)
@@ -186,6 +143,66 @@ module Frachtraum
     abort "not yet implemented"
   end # setupdisk_linux
   
+  # ---------------
+  
+  def pretty_SI_bytes(bytes)
+    return "%.1f TB" % (bytes.to_f / BYTES_IN_TB) if bytes > BYTES_IN_TB
+    return "%.1f GB" % (bytes.to_f / BYTES_IN_GB) if bytes > BYTES_IN_GB
+    return "%.1f MB" % (bytes.to_f / BYTES_IN_MB) if bytes > BYTES_IN_MB
+    return "%.1f KB" % (bytes.to_f / BYTES_IN_KB) if bytes > BYTES_IN_KB
+    return "#{bytes} B"
+  end
+  module_function :pretty_SI_bytes
+  
+  def pretty_IEC_bytes(bytes)
+    return "%.1f TiB" % (bytes.to_f / BYTES_IN_TiB) if bytes > BYTES_IN_TiB
+    return "%.1f GiB" % (bytes.to_f / BYTES_IN_GiB) if bytes > BYTES_IN_GiB
+    return "%.1f MiB" % (bytes.to_f / BYTES_IN_MiB) if bytes > BYTES_IN_MiB
+    return "%.1f KiB" % (bytes.to_f / BYTES_IN_KiB) if bytes > BYTES_IN_KiB
+    return "#{bytes} B"
+  end
+  module_function :pretty_IEC_bytes
+  
+  def attach(password, depot=nil)
+    case RUBY_PLATFORM
+      when /bsd/   then attach_bsd   password, depot
+      when /linux/ then attach_linux password, depot
+    end
+  end
+  module_function :attach
+  
+  def capacity()
+    total_used  = 0
+    total_avail = 0
+    DEPOTS.each do |depot|
+      used  = %x( zfs get -o value -Hp used #{MOUNTPOINT}/#{depot} )
+      avail = %x( zfs get -o value -Hp available #{MOUNTPOINT}/#{depot} )
+      
+      total_used  += (used =="" ? 0 : used).to_i  # / 1000 # 1024
+      total_avail += (avail=="" ? 0 : avail).to_i # / 1000 # 1024
+    end
+    
+    total = total_used + total_avail
+    
+    return {:total => total, :avail => total_avail, :used => total_used}
+  end
+  module_function :capacity
+  
+  
+  def setupdisk(dev, label, password, compression, encryption, keylength, mountpoint)
+    
+    abort "untested procedure -- won't continue"
+    
+    case RUBY_PLATFORM
+      when /bsd/   then setupdisk_bsd   dev, label, password, compression, encryption, keylength, mountpoint
+      when /linux/ then setupdisk_linux dev, label, password, compression, encryption, keylength, mountpoint
+      else abort "OS not supported"
+    end
+  end
+  module_function :setupdisk
+  
+
+  
   def run_system_test()
     tool_list = []  
     case RUBY_PLATFORM
@@ -201,6 +218,7 @@ module Frachtraum
     # find_executable seems to create such file in case executable is not found
     File.delete 'mkmf.log' if File.exists?('mkmf.log')
   end # run_system_test
+  module_function :run_system_test
   
   
   def zfs_dataset_exists?(dataset)
@@ -211,6 +229,7 @@ module Frachtraum
     else abort "cant'handle output of zfs_dataset_exists?: #{output}"
     end
   end
+  module_function :zfs_dataset_exists?
   
   def zfs_dataset_compression_ratio(dataset)
     cmd = "zfs get compressratio #{dataset} | grep compressratio"
@@ -224,6 +243,7 @@ module Frachtraum
       end
     end
   end
+  module_function :zfs_dataset_compression_ratio
   
 end # Frachtraum
 

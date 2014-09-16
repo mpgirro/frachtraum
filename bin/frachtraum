@@ -4,6 +4,10 @@
 require 'frachtraum'
 require 'thor'
 
+def get_password(prompt="Enter Password")
+   ask(prompt) {|q| q.echo = false}
+end
+
 class FrachtraumCLI < Thor
   
   desc "attach [DEPOT]", "decrypt and mount depot(s)"
@@ -20,10 +24,7 @@ class FrachtraumCLI < Thor
     
     password = get_password
     
-    case RUBY_PLATFORM
-      when /bsd/   then Frachtraum.attach_bsd   password, depot
-      when /linux/ then Frachtraum.attach_linux password, depot
-    end
+    Frachtraum.attach password, depot
   end
   
   # --------------
@@ -43,9 +44,9 @@ class FrachtraumCLI < Thor
     else
       puts ""
       puts "Capacity:"
-      puts "    Available:\t#{Frachtraum.pretty_SI_bytes(c[:avail])}"
-      puts "    Used:\t#{Frachtraum.pretty_SI_bytes(c[:used])}"
-      puts "    Total:\t#{Frachtraum.pretty_SI_bytes(c[:total])}"
+      puts "    Available: #{Frachtraum.pretty_SI_bytes(c[:avail])}"
+      puts "    Used:      #{Frachtraum.pretty_SI_bytes(c[:used])}"
+      puts "    Total:     #{Frachtraum.pretty_SI_bytes(c[:total])}"
       puts ""
     end
   end
@@ -138,14 +139,7 @@ class FrachtraumCLI < Thor
     
     # TODO promt for confirmation!!
     
-    case RUBY_PLATFORM
-    when /bsd/    
-      Frachtraum.setupdisk_bsd   dev, label, password, compression, encryption, keylength, mountpoint
-    when /linux/  
-      Frachtraum.setupdisk_linux dev, label, password, compression, encryption, keylength, mountpoint
-    else 
-      abort "OS not supported"
-    end
+    Frachtraum.setupdisk dev, label, password, compression, encryption, keylength, mountpoint
     
   end
   
