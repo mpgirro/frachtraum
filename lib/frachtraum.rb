@@ -90,12 +90,10 @@ module Frachtraum
      ask(prompt) {|q| q.echo = false}
   end
   
-  def attach_bsd(depot=nil)
+  def attach_bsd(password, depot=nil)
     
     # if we provided a specific depot, run procedure only on that one
     depots = depot.nil? ? DEPOTS : [ depot ]
-    
-    password = get_password
     
     # first of all, decrypt and mount all depots
     depots.each do |depot|      
@@ -127,7 +125,7 @@ module Frachtraum
     else puts "FAILED! --> #{output}" end
   end
   
-  def attach_linux(depot)
+  def attach_linux(password, depot)
     # TODO
     abort "not yet implemented"
   end
@@ -149,21 +147,12 @@ module Frachtraum
     return {:total => total, :avail => total_avail, :used => total_used}
   end
   
-  def setupdisk_bsd(dev, label, compression, encryption, keylength, mountpoint)
+  def setupdisk_bsd(dev, label, password, compression, encryption, keylength, mountpoint)
     
     # TODO password promt, confirmation question, etc..
     abort "implementation not ready yet"
     
-    password1 = get_password("enter the encryption password: ")
-    password2 = get_password("enter password again: ")
-    if password1.match(password2)
-      password = password1
-    else
-      abort "passwords not equal!"
-    end
     
-    # TODO promt for confirmation!!
-
     exec_cmd "destroying previous partitioning on /dev/#{dev}...", 
              "dd if=/dev/zero of=/dev/#{dev} bs=512 count=1"
     
@@ -192,7 +181,7 @@ module Frachtraum
     
   end # setupdisk_bsd
   
-  def setupdisk_linux(dev, label, compression, encryption, keylength, mountpoint)
+  def setupdisk_linux(dev, label, password, compression, encryption, keylength, mountpoint)
     # TODO
     abort "not yet implemented"
   end # setupdisk_linux
@@ -220,6 +209,19 @@ module Frachtraum
     when /yes/ then return true
     when /dataset does not exist/ then return false
     else abort "cant'handle output of zfs_dataset_exists?: #{output}"
+    end
+  end
+  
+  def zfs_dataset_compression_ratio(dataset)
+    cmd = "zfs get compressratio #{dataset} | grep compressratio"
+    Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
+      output = stdout_err.gets
+      if output == ""
+        return "N/A"
+      else
+        parts = output.split(' ')
+        return parts[2] # => ratio
+      end
     end
   end
   

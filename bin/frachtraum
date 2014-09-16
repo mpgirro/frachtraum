@@ -18,9 +18,11 @@ class FrachtraumCLI < Thor
   LONGDESC
   def attach(depot=nil)
     
+    password = get_password
+    
     case RUBY_PLATFORM
-      when /bsd/   then Frachtraum.attach_bsd   depot
-      when /linux/ then Frachtraum.attach_linux depot
+      when /bsd/   then Frachtraum.attach_bsd   password, depot
+      when /linux/ then Frachtraum.attach_linux password, depot
     end
   end
   
@@ -39,26 +41,18 @@ class FrachtraumCLI < Thor
     when "smb", "samba"
       puts "#{c[:total]/1000} #{c[:avail]/1000}"
     else
+      puts ""
       puts "Capacity:"
       puts "    Available:\t#{Frachtraum.pretty_SI_bytes(c[:avail])}"
       puts "    Used:\t#{Frachtraum.pretty_SI_bytes(c[:used])}"
       puts "    Total:\t#{Frachtraum.pretty_SI_bytes(c[:total])}"
+      puts ""
     end
   end
   
   # --------------
   
-  desc "diskreport", "lorem ipsum"
-  long_desc <<-LONGDESC
-    lorem ipsum
-  LONGDESC
-  def diskreport()
-    # TODO
-  end
-  
-  # --------------
-  
-  desc "list", "list depots"
+  desc "list", "list depots and timemachine targets"
   long_desc <<-LONGDESC
     lorem ipsum
   LONGDESC
@@ -96,6 +90,16 @@ class FrachtraumCLI < Thor
   
   # --------------
   
+  desc "report", "lorem ipsum"
+  long_desc <<-LONGDESC
+    lorem ipsum
+  LONGDESC
+  def report()
+    # TODO
+  end
+  
+  # --------------
+  
   desc "setupdisk", "setup a device as a new depot"
   long_desc <<-LONGDESC
     `frachtraum setup dev label` will setup...
@@ -110,10 +114,37 @@ class FrachtraumCLI < Thor
     keylength   = options[:keylength]   ? options[:keylength]   : Frachtraum::KEYLENGTH
     mountpoint  = options[:mountpoint]  ? options[:mountpoint]  : Frachtraum::MOUNTPOINT
     
+    password1 = get_password("enter the encryption password: ")
+    password2 = get_password("enter password again: ")
+    if password1.match(password2)
+      password = password1
+    else
+      abort "passwords not equal!"
+    end
+    
+    puts ""
+    puts "Device:      #{dev}"
+    puts "Label:       #{label}"
+    puts "Compression: #{compression}"
+    puts "Encryption:  #{encryption}"
+    puts "Keylength:   #{keylength}"
+    puts "Mountpoint:  #{mountpoint}"
+    puts ""
+    puts "ATTENTION! This is a destructive action. All data on the device will be"
+    puts "wiped. If you forget you password, you will not be able to access any"
+    puts "containing data any more."
+    puts ""
+    puts "Are you sure you want to continue? (type 'yes')"
+    
+    # TODO promt for confirmation!!
+    
     case RUBY_PLATFORM
-      when /bsd/   then Frachtraum.setupdisk_bsd   dev, label, compression, encryption, keylength, mountpoint
-      when /linux/ then Frachtraum.setupdisk_linux dev, label, compression, encryption, keylength, mountpoint
-      else abort "OS not supported"
+    when /bsd/    
+      Frachtraum.setupdisk_bsd   dev, label, password, compression, encryption, keylength, mountpoint
+    when /linux/  
+      Frachtraum.setupdisk_linux dev, label, password, compression, encryption, keylength, mountpoint
+    else 
+      abort "OS not supported"
     end
     
   end
