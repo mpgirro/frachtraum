@@ -4,12 +4,11 @@
 
 require 'mkmf' # part of stdlib
 require 'open3'
-require 'highline/import'
 require 'parseconfig'
 
 module Frachtraum
   
-  VERSION = '0.0.1'
+  VERSION = '0.0.1'.freeze
   
   CONFIG_FILE = 'frachtraum.conf.example'
   
@@ -224,9 +223,9 @@ module Frachtraum
   def zfs_dataset_exists?(dataset)
     output = %x( zfs get -H mounted #{dataset} 2>&1 )
     case output
-    when /yes/ then return true
-    when /dataset does not exist/ then return false
-    else abort "cant'handle output of zfs_dataset_exists?: #{output}"
+      when /yes/ then return true
+      when /dataset does not exist/ then return false
+      else abort "cant'handle output of zfs_dataset_exists?: #{output}"
     end
   end
   module_function :zfs_dataset_exists?

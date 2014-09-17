@@ -3,9 +3,13 @@
 
 require 'frachtraum'
 require 'thor'
+require 'highline/import'
 
-def get_password(prompt="Enter Password")
-   ask(prompt) {|q| q.echo = false}
+def prompt_password(prompt="Password: ")
+  HighLine.ask(prompt) { |q| 
+    q.echo = false 
+    # q.echo = "*"
+  }
 end
 
 class FrachtraumCLI < Thor
@@ -22,7 +26,7 @@ class FrachtraumCLI < Thor
   LONGDESC
   def attach(depot=nil)
     
-    password = get_password
+    password = prompt_password
     
     Frachtraum.attach password, depot
   end
@@ -115,8 +119,8 @@ class FrachtraumCLI < Thor
     keylength   = options[:keylength]   ? options[:keylength]   : Frachtraum::KEYLENGTH
     mountpoint  = options[:mountpoint]  ? options[:mountpoint]  : Frachtraum::MOUNTPOINT
     
-    password1 = get_password("enter the encryption password: ")
-    password2 = get_password("enter password again: ")
+    password1 = prompt_password("enter encryption password: ")
+    password2 = prompt_password("enter password again: ")
     if password1.match(password2)
       password = password1
     else
@@ -135,12 +139,14 @@ class FrachtraumCLI < Thor
     puts "wiped. If you forget you password, you will not be able to access any"
     puts "containing data any more."
     puts ""
-    puts "Are you sure you want to continue? (type 'yes')"
     
-    # TODO promt for confirmation!!
+    answer = HighLine.ask("Are you sure you want to continue? (type 'yes'): ") { |q| q.echo = true }
     
-    Frachtraum.setupdisk dev, label, password, compression, encryption, keylength, mountpoint
-    
+    if answer.downcase.match("yes")
+      Frachtraum.setupdisk dev, label, password, compression, encryption, keylength, mountpoint
+    else
+      abort "ABORT -- device will not pe processed!"
+    end
   end
   
   # --------------
