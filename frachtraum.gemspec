@@ -20,6 +20,7 @@ Gem::Specification.new do |spec|
    
   spec.required_ruby_version = '>= 1.9.3'  
   
+  spec.add_dependency 'thor', '~> 0.19.1' 
   spec.add_dependency 'highline', '~> 1.6.21'
   spec.add_dependency 'parseconfig', '~> 1.0.4'
 
