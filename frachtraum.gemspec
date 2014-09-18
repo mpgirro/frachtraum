@@ -24,5 +24,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'highline', '~> 1.6.21'
   spec.add_dependency 'parseconfig', '~> 1.0.4'
   spec.add_dependency 'rainbow', '~> 2.0.0'
+  spec.add_dependency 'terminal-table', '~> 1.4.5'
 
 end

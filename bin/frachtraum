@@ -5,6 +5,7 @@ require 'frachtraum'
 require 'thor'
 require 'highline/import'
 require 'rainbow'
+require 'terminal-table'
 
 def prompt_password(prompt="Password: ")
   HighLine.ask(prompt) { |q| 
@@ -119,13 +120,15 @@ class FrachtraumCLI < Thor
   LONGDESC
   def report()
     
-    report_list = ["DEPOTS", "AVAILABLE", "USED", "COMPRESSRATIO"]
+    report_rows = []
     Frachtraum.report.keys.each do |depot|
       depot_h = depots_data[depot]
-      report_list << [depot, depot_h[:available], depot_h[:used], depot_h[:compressratio]]
+      report_rows << [depot, depot_h[:available], depot_h[:used], depot_h[:compressratio]]
     end
     
     # TODO
+    table = Terminal::Table.new :headings => ["DEPOTS", "AVAILABLE", "USED", "COMPRESSRATIO"], :rows => report_rows
+    puts table
     
   end
   
