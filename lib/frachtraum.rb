@@ -125,9 +125,12 @@ module Frachtraum
   def zfs_dataset_exists?(dataset)
     output = %x( zfs get -H mounted #{dataset} 2>&1 )
     case output
-      when /yes/ then return true
-      when /dataset does not exist/ then return false
-      else abort "cant'handle output of zfs_dataset_exists?: #{output}"
+      when /yes/
+        return true
+      when /dataset does not exist/, /permission denied/ 
+        return false
+      else 
+        abort "can't handle output of zfs_dataset_exists?: #{output}"
     end
   end
   module_function :zfs_dataset_exists?
