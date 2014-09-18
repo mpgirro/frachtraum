@@ -65,6 +65,7 @@ class FrachtraumCLI < Thor
   option :simple, :type => :boolean
   def list(subset=nil)
     
+    # TODO: this needs to be a constant
     list_width = 60 # character length of list
 
     if subset == "depot" || subset == "depots" || subset.nil?
@@ -117,7 +118,15 @@ class FrachtraumCLI < Thor
     lorem ipsum
   LONGDESC
   def report()
+    
+    report_list = ["DEPOTS", "AVAILABLE", "USED", "COMPRESSRATIO"]
+    Frachtraum.report.keys.each do |depot|
+      depot_h = depots_data[depot]
+      report_list << [depot, depot_h[:available], depot_h[:used], depot_h[:compressratio]]
+    end
+    
     # TODO
+    
   end
   
   # --------------

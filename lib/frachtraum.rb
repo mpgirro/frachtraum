@@ -9,13 +9,12 @@ require 'parseconfig'
 require 'frachtraum/config'
 require 'frachtraum/bsd'
 require 'frachtraum/linux'
-
+require 'frachtraum/osx'
 
 module Frachtraum
   
   VERSION = '0.0.1'.freeze
   
-
   # Kibibyte, Mebibyte, Gibibyte, etc... all the IEC sizes
   BYTES_IN_KiB = 2**10
   BYTES_IN_MiB = 2**20
@@ -89,6 +88,28 @@ module Frachtraum
     return {:total => total, :avail => total_avail, :used => total_used}
   end
   module_function :capacity
+  
+  def report()
+    
+    report_table = {}
+    reported_values = [:used,:available,:compressratio]
+    
+    DEPOTS.each do |depot|
+      if zfs_dataset_exists?(depot)
+        depot_info = {}
+        reported_values.each do |repval|
+          depot_info[repval] = %x( zfs get -o value -Hp #{repval.to_s} #{MOUNTPOINT}/#{depot} )
+        end
+        report_table[depot] = depot_info
+
+        # TODO        
+      end
+
+    end
+
+    return report_table
+  end
+  module_function :report
   
   
   def setupdisk(dev, label, password, compression, encryption, keylength, mountpoint)
