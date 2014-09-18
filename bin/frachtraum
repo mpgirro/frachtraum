@@ -57,13 +57,15 @@ class FrachtraumCLI < Thor
   
   # --------------
   
-  desc "list", "list depots and timemachine targets"
+  desc "list", "list depots and/or timemachine targets"
   long_desc <<-LONGDESC
     lorem ipsum
   LONGDESC
   option :simple, :type => :boolean
   def list(subset=nil)
     
+    list_width = 60 # character length of list
+
     if subset == "depot" || subset == "depots" || subset.nil?
       if options[:simple]
         Frachtraum::DEPOTS.each{ |depot| puts depot }
@@ -71,8 +73,8 @@ class FrachtraumCLI < Thor
         puts "" # empty line
         puts "Depots:"
         puts "" # empty line
-        Frachtraum::DEPOTS.each{ |depot| 
-          puts "    #{depot}\t\t[#{Frachtraum.zfs_dataset_exists?(depot) ? "attached" : "UNAVAILABLE"}]" 
+        Frachtraum::DEPOTS.each{ |dataset| 
+          puts "    #{dataset}#{(Frachtraum.zfs_dataset_exists?(dataset) ? "[attached]" : "[UNAVAILABLE]").rjust(list_width-dataset.length)}" 
         }
         puts "" # empty line
       end
@@ -85,8 +87,8 @@ class FrachtraumCLI < Thor
         puts "" unless subset.nil? # empty line
         puts "Timemachine targets:"
         puts "" # empty line
-        Frachtraum::TIMEMACHINE_TARGETS.each{ |tm| 
-          puts "    #{tm}\t\t[#{Frachtraum.zfs_dataset_exists?(tm) ? "attached" : "UNAVAILABLE"}]" 
+        Frachtraum::TIMEMACHINE_TARGETS.each{ |dataset| 
+          puts "    #{dataset}#{(Frachtraum.zfs_dataset_exists?(dataset) ? "[attached]" : "[UNAVAILABLE]").rjust(list_width-dataset.length)}" 
         }
         puts "" # empty line
       end
@@ -151,7 +153,7 @@ class FrachtraumCLI < Thor
   
   # --------------
   
-  desc "sweep", "sweeps the frachtraum"
+  desc "sweep", "sweep the frachtraum!"
   long_desc <<-LONGDESC
     `frachtraum sweep` will ...
 
