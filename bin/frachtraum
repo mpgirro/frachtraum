@@ -4,6 +4,7 @@
 require 'frachtraum'
 require 'thor'
 require 'highline/import'
+require 'rainbow'
 
 def prompt_password(prompt="Password: ")
   HighLine.ask(prompt) { |q| 
@@ -74,7 +75,14 @@ class FrachtraumCLI < Thor
         puts "Depots:"
         puts "" # empty line
         Frachtraum::DEPOTS.each{ |dataset| 
-          puts "    #{dataset}#{(Frachtraum.zfs_dataset_exists?(dataset) ? "[attached]" : "[UNAVAILABLE]").rjust(list_width-dataset.length)}" 
+          status = 
+            if Frachtraum.zfs_dataset_exists?(dataset)
+              Rainbow("attached").green
+            else
+              Rainbow("UNAVAILABLE").red
+            end
+          status = "[#{status}]".rjust(list_width-dataset.length)
+          puts "    #{dataset}#{status}" 
         }
         puts "" # empty line
       end
@@ -88,7 +96,14 @@ class FrachtraumCLI < Thor
         puts "Timemachine targets:"
         puts "" # empty line
         Frachtraum::TIMEMACHINE_TARGETS.each{ |dataset| 
-          puts "    #{dataset}#{(Frachtraum.zfs_dataset_exists?(dataset) ? "[attached]" : "[UNAVAILABLE]").rjust(list_width-dataset.length)}" 
+          status = 
+            if Frachtraum.zfs_dataset_exists?(dataset)
+              Rainbow("attached").green
+            else
+              Rainbow("UNAVAILABLE").red
+            end
+          status = "[#{status}]".rjust(list_width-dataset.length)
+          puts "    #{dataset}#{status}" 
         }
         puts "" # empty line
       end
@@ -153,7 +168,7 @@ class FrachtraumCLI < Thor
   
   # --------------
   
-  desc "sweep", "sweep the frachtraum!"
+  desc "sweep", "sweep the depots!"
   long_desc <<-LONGDESC
     `frachtraum sweep` will ...
 
@@ -161,6 +176,10 @@ class FrachtraumCLI < Thor
   LONGDESC
   def sweep()
     # TODO
+    Frachtraum::DEPOTS.each do |depot| 
+    
+    
+    end
   end
   
   # --------------
