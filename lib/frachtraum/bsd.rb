@@ -1,6 +1,6 @@
 module Frachtraum
   
-  REQUIRED_TOOLS_BSD   = ['dd','gpart','glabel','geli','zfs','zpool']
+  REQUIRED_TOOLS_BSD   = ['dd','grep','gpart','glabel','geli','zfs','zpool']
   
   
   def attach_bsd(password, depot=nil)
