@@ -64,10 +64,10 @@ module Frachtraum
   end
   module_function :pretty_IEC_bytes
   
-  def attach(password, depot=nil)
+  def attach(password, volume=nil)
     case RUBY_PLATFORM
-      when /bsd/   then attach_bsd   password, depot
-      when /linux/ then attach_linux password, depot
+      when /bsd/   then attach_bsd   password, volume
+      when /linux/ then attach_linux password, volume
     end
   end
   module_function :attach
@@ -75,9 +75,9 @@ module Frachtraum
   def capacity()
     total_used  = 0
     total_avail = 0
-    DEPOTS.each do |depot|
-      used  = %x( zfs get -o value -Hp used #{MOUNTPOINT}/#{depot} )
-      avail = %x( zfs get -o value -Hp available #{MOUNTPOINT}/#{depot} )
+    VOLUMES.each do |volume|
+      used  = %x( zfs get -o value -Hp used #{MOUNTPOINT}/#{volume} )
+      avail = %x( zfs get -o value -Hp available #{MOUNTPOINT}/#{volume} )
       
       total_used  += (used =="" ? 0 : used).to_i  # / 1000 # 1024
       total_avail += (avail=="" ? 0 : avail).to_i # / 1000 # 1024
@@ -94,17 +94,16 @@ module Frachtraum
     report_table = {}
     reported_values = [:used,:available,:compressratio]
     
-    DEPOTS.each do |depot|
-      if zfs_dataset_exists?(depot)
-        depot_info = {}
+    (VOLUMES+TIMEMACHINE_TARGETS).each do |dataset|
+      dataset_info = {}
+      if zfs_dataset_exists?(dataset)
         reported_values.each do |repval|
-          depot_info[repval] = %x( zfs get -o value -Hp #{repval.to_s} #{MOUNTPOINT}/#{depot} )
+          dataset_info[repval] = %x( zfs get -o value -Hp #{repval.to_s} #{MOUNTPOINT}/#{dataset} )
         end
-        report_table[depot] = depot_info
-
-        # TODO        
+      else
+        reported_values.each {|repval| dataset_info[repval] = "N/A" } 
       end
-
+      report_table[dataset] = dataset_info
     end
 
     return report_table

@@ -16,21 +16,21 @@ end
 
 class FrachtraumCLI < Thor
   
-  desc "attach [DEPOT]", "decrypt and mount depot(s)"
+  desc "attach [VOLUME]", "decrypt and mount volume(s)"
   long_desc <<-LONGDESC
     `frachtraum attach` will prompt you for a password.
     
-    The password is used to decrypt all depots specified
+    The password is used to decrypt all volume specified
     in #{Frachtraum::CONFIG_FILE}
 
-    You can optionally specify a single depot. In this case
-    only this depot will be decrypted and mounted.
+    You can optionally specify a single volume. In this case
+    only this volume will be decrypted and mounted.
   LONGDESC
-  def attach(depot=nil)
+  def attach(volume=nil)
     
     password = prompt_password
     
-    Frachtraum.attach password, depot
+    Frachtraum.attach password, volume
   end
   
   # --------------
@@ -59,7 +59,7 @@ class FrachtraumCLI < Thor
   
   # --------------
   
-  desc "list", "list depots and/or timemachine targets"
+  desc "list", "list volumes and/or timemachine targets"
   long_desc <<-LONGDESC
     lorem ipsum
   LONGDESC
@@ -69,22 +69,22 @@ class FrachtraumCLI < Thor
     # TODO: this needs to be a constant
     list_width = 60 # character length of list
 
-    if subset == "depot" || subset == "depots" || subset.nil?
+    if subset == "volume" || subset == "volumes" || subset.nil?
       if options[:simple]
-        Frachtraum::DEPOTS.each{ |depot| puts depot }
+        Frachtraum::VOLUMES.each{ |volume| puts volume }
       else
         puts "" # empty line
-        puts "Depots:"
+        puts "Volumes:"
         puts "" # empty line
-        Frachtraum::DEPOTS.each{ |dataset| 
+        Frachtraum::VOLUMES.each{ |volume| 
           status = 
-            if Frachtraum.zfs_dataset_exists?(dataset)
+            if Frachtraum.zfs_dataset_exists?(volume)
               Rainbow("attached").green
             else
               Rainbow("UNAVAILABLE").red
             end
-          status = "[#{status}]".rjust(list_width-dataset.length)
-          puts "    #{dataset}#{status}" 
+          status = "[#{status}]".rjust(list_width-volume.length)
+          puts "    #{volume}#{status}" 
         }
         puts "" # empty line
       end
@@ -92,7 +92,7 @@ class FrachtraumCLI < Thor
     
     if subset == "timemachine" || subset == "tm" || subset.nil?
       if options[:simple]
-        Frachtraum::TIMEMACHINE_TARGETS.each{ |depot| puts depot }
+        Frachtraum::TIMEMACHINE_TARGETS.each{ |dataset| puts dataset }
       else
         puts "" unless subset.nil? # empty line
         puts "Timemachine targets:"
@@ -121,20 +121,21 @@ class FrachtraumCLI < Thor
   def report()
     
     report_rows = []
-    Frachtraum.report.keys.each do |depot|
-      depot_h = depots_data[depot]
-      report_rows << [depot, depot_h[:available], depot_h[:used], depot_h[:compressratio]]
+    report_data = Frachtraum.report
+    report_data.keys.each do |volumes|
+      volumes_h = report_data[volumes]
+      report_rows << [volumes, volumes_h[:used], volumes_h[:available], volumes_h[:compressratio]]
     end
     
     # TODO
-    table = Terminal::Table.new :headings => ["DEPOTS", "AVAILABLE", "USED", "COMPRESSRATIO"], :rows => report_rows
+    table = Terminal::Table.new :headings => ["VOLUMES", "USED", "AVAILABLE", "COMPRESSRATIO"], :rows => report_rows
     puts table
     
   end
   
   # --------------
   
-  desc "setupdisk", "setup a device as a new depot"
+  desc "setupdisk", "setup a device as a new volume"
   long_desc <<-LONGDESC
     `frachtraum setup dev label` will setup...
     
@@ -180,7 +181,7 @@ class FrachtraumCLI < Thor
   
   # --------------
   
-  desc "sweep", "sweep the depots!"
+  desc "sweep", "sweep the volumes!"
   long_desc <<-LONGDESC
     `frachtraum sweep` will ...
 
@@ -188,7 +189,7 @@ class FrachtraumCLI < Thor
   LONGDESC
   def sweep()
     # TODO
-    Frachtraum::DEPOTS.each do |depot| 
+    Frachtraum::VOLUMES.each do |volume| 
     
     
     end

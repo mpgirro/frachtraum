@@ -1,7 +1,10 @@
 # Example Config
+#
+# Copy it to ~/.frachtraum.conf and edit it to your own needs
+#
 compression = lz4
-depots 		= depot1,depot2,depot3
+volumes		= volume1,volume2,volume3
 encryption 	= AES-XTS
 keylength 	= 4096
 mountpoint 	= /frachtraum
-tmtargets	= depot1/TimeMachine/user1,depot1/TimeMachine/user2
+tmtargets	= volume1/TimeMachine/user1,volume1/TimeMachine/user2

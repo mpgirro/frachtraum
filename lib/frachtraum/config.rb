@@ -10,7 +10,7 @@ module Frachtraum
     KEYLENGTH   = config['keylength']
     MOUNTPOINT  = config['mountpoint']
   
-    DEPOTS = config['depots'].split(',')
+    VOLUMES = config['volumes'].split(',')
     TIMEMACHINE_TARGETS = config['tmtargets'].split(',')
   else
     COMPRESSION = 'lz4'
@@ -18,7 +18,7 @@ module Frachtraum
     KEYLENGTH   = 4096
     MOUNTPOINT  = '/frachtraum'
   
-    DEPOTS = []
+    VOLUMES = []
     TIMEMACHINE_TARGETS = []
   end
 end
