@@ -76,8 +76,8 @@ module Frachtraum
     total_used  = 0
     total_avail = 0
     VOLUMES.each do |volume|
-      used  = %x( zfs get -o value -Hp used #{MOUNTPOINT}/#{volume} 2>&1 )
-      avail = %x( zfs get -o value -Hp available #{MOUNTPOINT}/#{volume} 2>&1 )
+      used  = %x( zfs get -o value -Hp used #{volume} 2>&1 )
+      avail = %x( zfs get -o value -Hp available #{volume} 2>&1 )
       
       total_used  += (used =="" ? 0 : used).to_i  # / 1000 # 1024
       total_avail += (avail=="" ? 0 : avail).to_i # / 1000 # 1024
@@ -98,7 +98,7 @@ module Frachtraum
       dataset_info = {}
       if zfs_dataset_exists?(dataset)
         reported_values.each do |repval|
-          dataset_info[repval] = %x( zfs get -o value -Hp #{repval.to_s} #{MOUNTPOINT}/#{dataset} )
+          dataset_info[repval] = %x( zfs get -o value -Hp #{repval.to_s} #{dataset} )
         end
       else
         reported_values.each {|repval| dataset_info[repval] = "N/A" } 
