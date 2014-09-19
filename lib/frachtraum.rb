@@ -76,7 +76,7 @@ module Frachtraum
   def capacity()
     total_used  = 0
     total_avail = 0
-    VOLUMES.each do |volume|
+    Frachtraum::VOLUMES.each do |volume|
       used  = %x( zfs get -o value -Hp used #{volume} 2>&1 )
       avail = %x( zfs get -o value -Hp available #{volume} 2>&1 )
       
@@ -95,7 +95,7 @@ module Frachtraum
     report_table = {}
     reported_values = [:used,:available,:compression,:compressratio]
     
-    (VOLUMES+TIMEMACHINE_TARGETS).each do |dataset|
+    (Frachtraum::VOLUMES + Frachtraum::TIMEMACHINE_TARGETS).each do |dataset|
       dataset_info = {}
       if zfs_dataset_exists?(dataset)
         reported_values.each do |repval|
@@ -142,9 +142,7 @@ module Frachtraum
       else abort "OS not supported"
     end
     
-    tool_list.each do |tool|
-      find_executable tool
-    end
+    tool_list.each { |tool| find_executable tool }
     
     # find_executable seems to create such file in case executable is not found
     File.delete 'mkmf.log' if File.exists?('mkmf.log')
@@ -155,29 +153,15 @@ module Frachtraum
   def zfs_dataset_exists?(dataset)
     output = %x( zfs get -H mounted #{dataset} 2>&1 )
     case output
-      when /yes/
-        return true
-      when /dataset does not exist/, /permission denied/ 
-        return false
-      else 
-        abort "can't handle output of zfs_dataset_exists?: #{output}"
+    when /yes/
+      return true
+    when /dataset does not exist/, /permission denied/ 
+      return false
+    else 
+      abort "can't handle output of zfs_dataset_exists?: #{output}"
     end
   end
   module_function :zfs_dataset_exists?
-  
-  def zfs_dataset_compression_ratio(dataset)
-    cmd = "zfs get compressratio #{dataset} | grep compressratio"
-    Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
-      output = stdout_err.gets
-      if output == ""
-        return "N/A"
-      else
-        parts = output.split(' ')
-        return parts[2] # => ratio
-      end
-    end
-  end
-  module_function :zfs_dataset_compression_ratio
   
 end # Frachtraum
 

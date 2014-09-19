@@ -2,7 +2,6 @@ module Frachtraum
   
   REQUIRED_TOOLS_BSD   = ['dd','grep','gpart','glabel','geli','zfs','zpool']
   
-  
   def attach_bsd(password, volume=nil)
     
     # if we provided a specific depot, run procedure only on that one
@@ -23,7 +22,7 @@ module Frachtraum
     end # each
     
     # mount timemachine targets as well
-    TIMEMACHINE_TARGETS.each do |tmtarget|
+    Frachtraum::TIMEMACHINE_TARGETS.each do |tmtarget|
       print "mounting timemachine target #{tmtarget}...".ljust(35,".") # TODO: the length should be dynamically calculated, for tm targets as well
 
       output = %x( zfs mount #{tmtarget} 2>&1 )

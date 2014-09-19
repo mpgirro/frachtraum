@@ -7,13 +7,10 @@ require 'terminal-table'
 module Frachtraum
   
   def prompt_password(prompt="Password: ")
-    HighLine.ask(prompt) { |q| 
-      q.echo = false 
-      # q.echo = "*"
-    }
+    HighLine.ask(prompt) { |q| q.echo = false }
   end
 
-  class CLI < Thor
+  class Frachtraum::CLI < Thor
   
     desc "attach [VOLUME]", "decrypt and mount volume(s)"
     long_desc <<-LONGDESC
@@ -134,6 +131,7 @@ module Frachtraum
       # TODO
       table = Terminal::Table.new :headings => ["VOLUMES", "USED", "AVAILABLE", "COMPRESSION", "COMPRESSRATIO"], :rows => report_rows
       puts table
+      self.capacity
     
     end
   
