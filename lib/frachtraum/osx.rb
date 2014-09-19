@@ -8,7 +8,7 @@ module Frachtraum
   
   REQUIRED_TOOLS_OSX = [] # not yet supported
   
-  def attach_osx(password, depot)
+  def attach_osx(password, volume)
     # TODO
     abort "not yet implemented"
   end
@@ -17,5 +17,7 @@ module Frachtraum
     # TODO
     abort "not yet implemented"
   end # setupdisk_osx
+  
+  extend self
   
 end

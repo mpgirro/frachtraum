@@ -2,7 +2,7 @@ module Frachtraum
   
   REQUIRED_TOOLS_LINUX = [] # not yet supported
   
-  def attach_linux(password, depot)
+  def attach_linux(password, volume)
     # TODO
     abort "not yet implemented"
   end
@@ -11,5 +11,7 @@ module Frachtraum
     # TODO
     abort "not yet implemented"
   end # setupdisk_linux
+  
+  extend self
   
 end

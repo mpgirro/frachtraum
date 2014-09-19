@@ -76,8 +76,8 @@ module Frachtraum
     total_used  = 0
     total_avail = 0
     VOLUMES.each do |volume|
-      used  = %x( zfs get -o value -Hp used #{MOUNTPOINT}/#{volume} )
-      avail = %x( zfs get -o value -Hp available #{MOUNTPOINT}/#{volume} )
+      used  = %x( zfs get -o value -Hp used #{MOUNTPOINT}/#{volume} 2>&1 )
+      avail = %x( zfs get -o value -Hp available #{MOUNTPOINT}/#{volume} 2>&1 )
       
       total_used  += (used =="" ? 0 : used).to_i  # / 1000 # 1024
       total_avail += (avail=="" ? 0 : avail).to_i # / 1000 # 1024
@@ -92,7 +92,7 @@ module Frachtraum
   def report()
     
     report_table = {}
-    reported_values = [:used,:available,:compressratio]
+    reported_values = [:used,:available,:compression,:compressratio]
     
     (VOLUMES+TIMEMACHINE_TARGETS).each do |dataset|
       dataset_info = {}
@@ -122,6 +122,15 @@ module Frachtraum
     end
   end
   module_function :setupdisk
+  
+  def sweep()
+    Frachtraum::VOLUMES.each do |volume| 
+      if zfs_dataset_exists?(volume)
+        # TODO
+      end
+    end
+  end
+  module_function :sweep
   
 
   def run_system_test()

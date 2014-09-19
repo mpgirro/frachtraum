@@ -3,18 +3,18 @@ module Frachtraum
   REQUIRED_TOOLS_BSD   = ['dd','grep','gpart','glabel','geli','zfs','zpool']
   
   
-  def attach_bsd(password, depot=nil)
+  def attach_bsd(password, volume=nil)
     
     # if we provided a specific depot, run procedure only on that one
-    depots = depot.nil? ? DEPOTS : [ depot ]
+    volumes = volume.nil? ? Frachtraum::VOLUMES : [ volume ]
     
     # first of all, decrypt and mount all depots
-    depots.each do |depot|      
-      print "decrypting /dev/label/#{depot}..."
+    volumes.each do |v|      
+      print "decrypting /dev/label/#{v}...".ljust(35,".") # TODO: the length should be dynamically calculated, for tm targets as well
       
-      output = %x( echo #{password} | geli attach -d -j - /dev/label/#{depot} 2>&1 )
+      output = %x( echo #{password} | geli attach -d -j - /dev/label/#{v} 2>&1 )
       if $?.success? 
-        output = %x( zfs mount #{depot} 2>&1 )
+        output = %x( zfs mount #{v} 2>&1 )
         if $?.success? then puts "DONE"
         else puts "FAILED! --> #{output}" end
       else 
@@ -24,7 +24,7 @@ module Frachtraum
     
     # mount timemachine targets as well
     TIMEMACHINE_TARGETS.each do |tmtarget|
-      print "mounting timemachine target #{tmtarget}..."
+      print "mounting timemachine target #{tmtarget}...".ljust(35,".") # TODO: the length should be dynamically calculated, for tm targets as well
 
       output = %x( zfs mount #{tmtarget} 2>&1 )
       if $?.success? then puts "DONE"
@@ -71,5 +71,9 @@ module Frachtraum
     puts "setup finished"
     
   end # setupdisk_bsd
+  
+  # well, we need this line so attach can call attach_bsd
+  # but I honestly don't know why...
+  extend self
   
 end
