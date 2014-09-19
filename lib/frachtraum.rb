@@ -7,6 +7,7 @@ require 'open3'
 require 'parseconfig'
 
 require 'frachtraum/config'
+require 'frachtraum/cli'
 require 'frachtraum/bsd'
 require 'frachtraum/linux'
 require 'frachtraum/osx'
