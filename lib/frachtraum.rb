@@ -124,8 +124,11 @@ module Frachtraum
   end
   module_function :setupdisk
   
-  def sweep()
-    Frachtraum::VOLUMES.each do |volume| 
+  def sweep(volume)
+    
+    target_volumes = volume.nil? ? Frachtraum::VOLUMES : volume
+    
+    target_volumes.each do |volume| 
       if zfs_dataset_exists?(volume)
         # TODO
       end

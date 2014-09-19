@@ -31,7 +31,7 @@ module Frachtraum
   
     # --------------
   
-    desc "capacity [OPTION]", "calculate storage capacity"
+    desc "capacity [OPTION]", "show overall storage capacity"
     long_desc <<-LONGDESC
       `frachtraum capacity` will output capacity...
 
@@ -110,7 +110,7 @@ module Frachtraum
   
     # --------------
   
-    desc "report", "lorem ipsum"
+    desc "report", "Print a detailed report on your frachtraum"
     long_desc <<-LONGDESC
       lorem ipsum
     LONGDESC
@@ -183,14 +183,14 @@ module Frachtraum
   
     # --------------
   
-    desc "sweep", "sweep the volumes!"
+    desc "sweep [VOLUME]", "sweep the volumes!"
     long_desc <<-LONGDESC
       `frachtraum sweep` will ...
 
       lorem ipsum
     LONGDESC
-    def sweep()
-      Frachtraum.sweep
+    def sweep(volume=nil)
+      Frachtraum.sweep volume
     end
   
     # --------------
