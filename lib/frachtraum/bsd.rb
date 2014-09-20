@@ -14,10 +14,10 @@ module Frachtraum
       output = %x( echo #{password} | geli attach -d -j - /dev/label/#{v} 2>&1 )
       if $?.success? 
         output = %x( zfs mount #{v} 2>&1 )
-        if $?.success? then puts "DONE"
-        else puts "FAILED! --> #{output}" end
+        if $?.success? then puts Rainbow("DONE").green
+        else puts Rainbow("FAILED!").red + " --> #{output}" end
       else 
-        puts "FAILED! --> #{output}" 
+        puts Rainbow("FAILED!").red + " --> #{output}"
       end
     end # each
     
@@ -33,8 +33,8 @@ module Frachtraum
     # restart samba so it reports the correct pool size
     print "restarting samba server..."
     output = %x( /usr/local/etc/rc.d/samba restart 2>&1 )
-    if $?.success? then puts "DONE"
-    else puts "FAILED! --> #{output}" end
+    if $?.success? then puts Rainbow("DONE").green
+    else puts Rainbow("FAILED!").red + " --> #{output}" end
   end
   
   def setupdisk_bsd(dev, label, password, compression, encryption, keylength, mountpoint)

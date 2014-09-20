@@ -4,12 +4,12 @@ require 'highline/import'
 require 'rainbow'
 require 'terminal-table'
 
+def prompt_password(prompt="Password: ")
+  HighLine.ask(prompt) { |q| q.echo = false }
+end
+
 module Frachtraum
   
-  def prompt_password(prompt="Password: ")
-    HighLine.ask(prompt) { |q| q.echo = false }
-  end
-
   class Frachtraum::CLI < Thor
   
     desc "attach [VOLUME]", "decrypt and mount volume(s)"
@@ -118,13 +118,13 @@ module Frachtraum
     
       report_rows = []
       report_data = Frachtraum.report
-      report_data.keys.each do |volumes|
-        volumes_h = report_data[volumes]
-        report_rows << [ volumes, 
-                         Frachtraum.pretty_SI_bytes(volumes_h[:used].to_i), 
-                         Frachtraum.pretty_SI_bytes(volumes_h[:available].to_i), 
-                         volumes_h[:compression], 
-                         volumes_h[:compressratio]
+      report_data.keys.each do |volume|
+        volume_h = report_data[volume]
+        report_rows << [ volume, 
+                         Frachtraum.pretty_SI_bytes(volume_h[:used].to_i), 
+                         Frachtraum.pretty_SI_bytes(volume_h[:available].to_i), 
+                         volume_h[:compression], 
+                         volume_h[:compressratio]
                        ]
       end
     

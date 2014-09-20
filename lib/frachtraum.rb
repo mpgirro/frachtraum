@@ -38,9 +38,9 @@ module Frachtraum
       
       exit_status = wait_thr.value
       if exit_status.success?
-        puts "done"
+        puts Rainbow("done").green
       else
-        abort "FAILED! --> #{stdout_err}"
+        abort Rainbow("FAILED!").red + " --> #{stdout_err}" 
       end
     end
   end # exec_cmd
@@ -67,8 +67,10 @@ module Frachtraum
   
   def attach(password, volume=nil)
     case RUBY_PLATFORM
-      when /bsd/   then attach_bsd   password, volume
-      when /linux/ then attach_linux password, volume
+      when /bsd/    then attach_bsd   password, volume
+      when /linux/  then attach_linux password, volume
+      #when /darwin/ then attach_osx   password, volume
+      else abort "OS not supported"
     end
   end
   module_function :attach
@@ -117,8 +119,9 @@ module Frachtraum
     abort "untested procedure -- won't continue"
     
     case RUBY_PLATFORM
-      when /bsd/   then setupdisk_bsd   dev, label, password, compression, encryption, keylength, mountpoint
-      when /linux/ then setupdisk_linux dev, label, password, compression, encryption, keylength, mountpoint
+      when /bsd/    then setupdisk_bsd   dev, label, password, compression, encryption, keylength, mountpoint
+      when /linux/  then setupdisk_linux dev, label, password, compression, encryption, keylength, mountpoint
+      #when /darwin/ then setupdisk_osx   dev, label, password, compression, encryption, keylength, mountpoint
       else abort "OS not supported"
     end
   end
@@ -127,6 +130,9 @@ module Frachtraum
   def sweep(volume)
     
     target_volumes = volume.nil? ? Frachtraum::VOLUMES : volume
+    
+    # TODO
+    abort "sweeping not supported yet"
     
     target_volumes.each do |volume| 
       if zfs_dataset_exists?(volume)
@@ -140,8 +146,9 @@ module Frachtraum
   def run_system_test()
     tool_list = []  
     case RUBY_PLATFORM
-      when /bsd/   then tool_list = REQUIRED_TOOLS_BSD
-      when /linux/ then tool_list = REQUIRED_TOOLS_LINUX
+      when /bsd/    then tool_list = REQUIRED_TOOLS_BSD
+      when /linux/  then tool_list = REQUIRED_TOOLS_LINUX
+      #when /darwin/ then tool_list = REQUIRED_TOOLS_OSX
       else abort "OS not supported"
     end
     
