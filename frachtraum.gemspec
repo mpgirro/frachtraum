@@ -6,8 +6,8 @@ require 'frachtraum'
 Gem::Specification.new do |spec|
   spec.name        = 'frachtraum'
   spec.version     = Frachtraum::VERSION
-  spec.date        = '2014-09-21'
-  spec.summary     = "ZFS volumes management tool"
+  spec.date        = '2014-09-22'
+  spec.summary     = "ZFS volumes encryption and management tool"
   spec.description = "lorem ipsum"
   spec.author      = "Maximilian Irro"
   spec.email       = 'max@disposia.org'
