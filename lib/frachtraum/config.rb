@@ -1,7 +1,13 @@
 
 module Frachtraum
   
-  CONFIG_FILE = 'frachtraum.conf.example'
+  case RUBY_PLATFORM
+    when /bsd/    then CONFIG_FILE = "/usr/local/etc/frachtraum.conf"
+    when /linux/  then CONFIG_FILE = "/usr/local/etc/frachtraum.conf" # is this correct?
+    #when /darwin/ then setupdisk_osx   dev, label, password, compression, encryption, keylength, mountpoint
+    else CONFIG_FILE = 'frachtraum.conf.example'
+  end
+  
   
   if File.exists?(CONFIG_FILE)
     config = ParseConfig.new(CONFIG_FILE)
