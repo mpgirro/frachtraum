@@ -26,8 +26,8 @@ module Frachtraum
       print "mounting tm #{tmtarget}...".ljust(OUTPUT_DOTS_LEN,".") 
 
       output = %x( zfs mount #{tmtarget} 2>&1 )
-      if $?.success? then puts "DONE"
-      else puts "FAILED! --> #{output}" end
+      if $?.success? puts Rainbow("DONE").green
+      else puts Rainbow("FAILED!").red + " --> #{output}" end
     end
     
     # restart samba so it reports the correct pool size

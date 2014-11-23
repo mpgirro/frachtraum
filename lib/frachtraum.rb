@@ -116,7 +116,7 @@ module Frachtraum
         if volume_info[:used]=="N/A" || volume_info[:available]=="N/A"
           "N/A"
         else 
-          volume_info[:used] + volume_info[:available]
+          (volume_info[:used].to_i + volume_info[:available].to_i)
         end
         
       report_table[dataset] = volume_info

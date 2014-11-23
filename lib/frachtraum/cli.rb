@@ -130,7 +130,7 @@ module Frachtraum
       end
     
       # TODO
-      table = Terminal::Table.new :headings => ["VOLUMES", "USED", "AVAILABLE", "COMPRESSION", "COMPRESSRATIO"], :rows => report_rows
+      table = Terminal::Table.new :headings => ["VOLUMES", "USED", "AVAILABLE", "TOTAL", "COMPRESSION", "COMPRESSRATIO"], :rows => report_rows
       
       table.align_column(2, :right)
       table.align_column(3, :right)
