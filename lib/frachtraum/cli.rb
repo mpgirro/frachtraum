@@ -204,7 +204,13 @@ module Frachtraum
     def test()
       Frachtraum.run_system_test
     end
-  
+    
+    # --------------
+    
+    desc "version", "print version information"
+    def version()
+      puts "frachtraum version" + Frachtraum::VERSION
+    end
   end
 
 end
