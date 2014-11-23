@@ -118,11 +118,21 @@ module Frachtraum
     
       report_rows = []
       report_data = Frachtraum.report
+            
       report_data.keys.each do |volume|
         volume_h = report_data[volume]
+        
+        # display available output red if there is less then 10% space left on volume
+        available_str = 
+          if volume_h[:available].to_i <= 0.1 * volume_h[:total].to_i && volume_h[:total].to_i != 0
+            Rainbow(Frachtraum.pretty_SI_bytes(volume_h[:available].to_i)).red
+          else
+            Frachtraum.pretty_SI_bytes(volume_h[:available].to_i)
+          end 
+        
         report_rows << [ volume, 
                          Frachtraum.pretty_SI_bytes(volume_h[:used].to_i), 
-                         Frachtraum.pretty_SI_bytes(volume_h[:available].to_i), 
+                         available_str, #Frachtraum.pretty_SI_bytes(volume_h[:available].to_i),
                          Frachtraum.pretty_SI_bytes(volume_h[:total].to_i), 
                          volume_h[:compression], 
                          volume_h[:compressratio]
@@ -132,9 +142,9 @@ module Frachtraum
       # TODO
       table = Terminal::Table.new :headings => ["VOLUMES", "USED", "AVAILABLE", "TOTAL", "COMPRESSION", "COMPRESSRATIO"], :rows => report_rows
       
+      table.align_column(1, :right)
       table.align_column(2, :right)
       table.align_column(3, :right)
-      table.align_column(4, :right)
       
       puts table
       self.capacity
