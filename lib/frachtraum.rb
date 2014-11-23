@@ -28,6 +28,8 @@ module Frachtraum
   BYTES_IN_GB = 10**9
   BYTES_IN_TB = 10**12
   
+  OUTPUT_DOTS_LEN = 40 # TODO: the length should be dynamically calculated, based on the strlen of longest tmtarget or volume
+  
   
   def exec_cmd(msg, cmd)
     

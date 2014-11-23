@@ -9,7 +9,7 @@ module Frachtraum
     
     # first of all, decrypt and mount all depots
     volumes.each do |v|      
-      print "decrypting #{v}...".ljust(35,".") # TODO: the length should be dynamically calculated, for tm targets as well
+      print "decrypting #{v}...".ljust(OUTPUT_DOTS_LEN,".") # TODO: the length should be dynamically calculated, for tm targets as well
       
       output = %x( echo #{password} | geli attach -d -j - /dev/label/#{v} 2>&1 )
       if $?.success? 
@@ -23,7 +23,7 @@ module Frachtraum
     
     # mount timemachine targets as well
     Frachtraum::TIMEMACHINE_TARGETS.each do |tmtarget|
-      print "mounting tm #{tmtarget}...".ljust(35,".") # TODO: the length should be dynamically calculated, for tm targets as well
+      print "mounting tm #{tmtarget}...".ljust(OUTPUT_DOTS_LEN,".") # TODO: the length should be dynamically calculated, for tm targets as well
 
       output = %x( zfs mount #{tmtarget} 2>&1 )
       if $?.success? then puts "DONE"
@@ -31,7 +31,7 @@ module Frachtraum
     end
     
     # restart samba so it reports the correct pool size
-    print "restarting samba server...".ljust(35,".") # TODO: the length should be dynamically calculated, for tm targets as well
+    print "restarting samba server...".ljust(OUTPUT_DOTS_LEN,".") # TODO: the length should be dynamically calculated, for tm targets as well
     output = %x( /usr/local/etc/rc.d/samba restart 2>&1 )
     if $?.success? then puts Rainbow("DONE").green
     else puts Rainbow("FAILED!").red + " --> #{output}" end
