@@ -74,7 +74,7 @@ module Frachtraum
           puts "" # empty line
           Frachtraum::VOLUMES.each{ |volume| 
             status = 
-              if Frachtraum.zfs_dataset_exists?(volume)
+              if Frachtraum.zfs_volume_exists?(volume)
                 Rainbow("attached").green
               else
                 Rainbow("UNAVAILABLE").red
@@ -95,7 +95,7 @@ module Frachtraum
           puts "" # empty line
           Frachtraum::TIMEMACHINE_TARGETS.each{ |dataset| 
             status = 
-              if Frachtraum.zfs_dataset_exists?(dataset)
+              if Frachtraum.zfs_volume_exists?(dataset)
                 Rainbow("attached").green
               else
                 Rainbow("UNAVAILABLE").red
@@ -123,6 +123,7 @@ module Frachtraum
         report_rows << [ volume, 
                          Frachtraum.pretty_SI_bytes(volume_h[:used].to_i), 
                          Frachtraum.pretty_SI_bytes(volume_h[:available].to_i), 
+                         Frachtraum.pretty_SI_bytes(volume_h[:total].to_i), 
                          volume_h[:compression], 
                          volume_h[:compressratio]
                        ]

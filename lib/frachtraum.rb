@@ -100,15 +100,26 @@ module Frachtraum
     reported_values = [:used,:available,:compression,:compressratio]
     
     (Frachtraum::VOLUMES + Frachtraum::TIMEMACHINE_TARGETS).each do |dataset|
-      dataset_info = {}
-      if zfs_dataset_exists?(dataset)
+      volume_info = {}
+      
+      # fetch the values
+      if zfs_volume_exists?(dataset)
         reported_values.each do |repval|
-          dataset_info[repval] = %x( zfs get -o value -Hp #{repval.to_s} #{dataset} )
+          volume_info[repval] = %x( zfs get -o value -Hp #{repval.to_s} #{dataset} )
         end
       else
-        reported_values.each {|repval| dataset_info[repval] = "N/A" } 
+        reported_values.each {|repval| volume_info[repval] = "N/A" } 
       end
-      report_table[dataset] = dataset_info
+      
+      # calculate a total size for each volume
+      volume_info[:total] = 
+        if volume_info[:used]=="N/A" || volume_info[:available]=="N/A"
+          "N/A"
+        else 
+          volume_info[:used] + volume_info[:available]
+        end
+        
+      report_table[dataset] = volume_info
     end
 
     return report_table
@@ -137,7 +148,7 @@ module Frachtraum
     abort "sweeping not supported yet"
     
     target_volumes.each do |volume| 
-      if zfs_dataset_exists?(volume)
+      if zfs_volume_exists?(volume)
         # TODO
       end
     end
@@ -162,7 +173,7 @@ module Frachtraum
   module_function :run_system_test
   
   
-  def zfs_dataset_exists?(dataset)
+  def zfs_volume_exists?(dataset)
     output = %x( zfs get -H mounted #{dataset} 2>&1 )
     case output
     when /yes/
@@ -170,10 +181,10 @@ module Frachtraum
     when /dataset does not exist/, /permission denied/ 
       return false
     else 
-      abort "can't handle output of zfs_dataset_exists?: #{output}"
+      abort "can't handle output of zfs_volume_exists?: #{output}"
     end
   end
-  module_function :zfs_dataset_exists?
+  module_function :zfs_volume_exists?
   
 end # Frachtraum
 
