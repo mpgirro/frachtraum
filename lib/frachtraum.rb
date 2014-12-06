@@ -14,7 +14,7 @@ require 'frachtraum/osx'
 
 module Frachtraum
   
-  VERSION = '0.0.8'.freeze
+  VERSION = '0.0.9'.freeze
   
   # Kibibyte, Mebibyte, Gibibyte, etc... all the IEC sizes
   BYTES_IN_KiB = 2**10
