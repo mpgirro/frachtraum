@@ -124,7 +124,7 @@ module Frachtraum
           elsif volume_info[:used]=="N/A" || volume_info[:total]=="N/A"
             "N/A"
           else
-            (100 * volume_info[:used].to_f / volume_info[:available].to_f ).to_i.to_s + " %"
+            (100 * volume_info[:used].to_f / volume_info[:total].to_f ).to_i.to_s + " %"
           end
         
       report_table[dataset] = volume_info
