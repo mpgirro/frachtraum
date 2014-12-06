@@ -123,6 +123,8 @@ module Frachtraum
             "0 %"
           elsif volume_info[:used]=="N/A" || volume_info[:total]=="N/A"
             "N/A"
+          elsif volume_info[:available].to_i == 0
+            "100 %"
           else
             (100 * volume_info[:used].to_f / volume_info[:total].to_f ).to_i.to_s + " %"
           end
