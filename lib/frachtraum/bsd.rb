@@ -23,7 +23,7 @@ module Frachtraum
     
     # mount timemachine targets as well
     Frachtraum::TIMEMACHINE_TARGETS.each do |tmtarget|
-      print "mounting tm #{tmtarget}...".ljust(OUTPUT_DOTS_LEN,".") 
+      print "mounting #{tmtarget}...".ljust(OUTPUT_DOTS_LEN,".") 
 
       output = %x( zfs mount #{tmtarget} 2>&1 )
       if $?.success? then puts Rainbow("DONE").green 
