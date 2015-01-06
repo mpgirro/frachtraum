@@ -14,7 +14,7 @@ require 'frachtraum/osx'
 
 module Frachtraum
 
-  VERSION = '0.0.10'.freeze
+  VERSION = '0.0.11'.freeze
 
   # Kibibyte, Mebibyte, Gibibyte, etc... all the IEC sizes
   BYTES_IN_KiB = 2**10
@@ -29,6 +29,10 @@ module Frachtraum
   BYTES_IN_TB = 10**12
 
   OUTPUT_DOTS_LEN = 40 # TODO: the length should be dynamically calculated, based on the strlen of longest tmtarget or volume
+
+
+  CHECKMARK = "\u2713" # => ✓
+  BALLOTX   = "\u2717" # => ✗
 
   def exec_cmd(msg, cmd)
 
