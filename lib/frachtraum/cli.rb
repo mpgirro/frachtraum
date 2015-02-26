@@ -163,6 +163,14 @@ module Frachtraum
     LONGDESC
     options :compression => :string, :encryption => :string, :keylength => :integer, :mountpoint => :string
     def setupdisk(dev,label)
+      
+      # TODO this should be removed once testing has finsihed
+      puts "ATTENTION! This procedure is pre-alpha. It is under high developement"
+      puts "and SHOULD NOT be used in a productive environment. Possible data loss"
+      puts "and/or system side effects are to be expceted."
+      
+      answer = HighLine.ask("Are you sure you want to continue? (type 'yes'): ") { |q| q.echo = true }
+      # # # # 
     
       compression = options[:compression] ? options[:compression] : Frachtraum::COMPRESSION
       encryption  = options[:encryption]  ? options[:encryption]  : Frachtraum::ENCRYPTION

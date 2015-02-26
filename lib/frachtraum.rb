@@ -143,8 +143,6 @@ module Frachtraum
 
   def setupdisk(dev, label, password, compression, encryption, keylength, mountpoint)
 
-    abort "untested procedure -- won't continue"
-
     case RUBY_PLATFORM
       when /bsd/    then setupdisk_bsd   dev, label, password, compression, encryption, keylength, mountpoint
       when /linux/  then setupdisk_linux dev, label, password, compression, encryption, keylength, mountpoint

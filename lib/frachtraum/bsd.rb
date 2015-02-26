@@ -40,10 +40,6 @@ module Frachtraum
 
   def setupdisk_bsd(dev, label, password, compression, encryption, keylength, mountpoint)
 
-    # TODO password promt, confirmation question, etc..
-    abort "implementation not ready yet"
-
-
     exec_cmd "destroying previous partitioning on /dev/#{dev}...",
              "dd if=/dev/zero of=/dev/#{dev} bs=512 count=1"
 
